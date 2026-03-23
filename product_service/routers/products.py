@@ -31,13 +31,14 @@ async def create_product(product: schemas.ProductCreate, db: Session = Depends(d
     return db_product
 
 @router.get("/search")
-async def search_products(query: str):
+@router.get("/search")
+async def search_products(query: str, db: Session = Depends(database.get_db)):
     # Perform a fuzzy search across name and description
     body = {
         "query": {
             "multi_match": {
                 "query": query,
-                "fields": ["name^3", "description"],  # Boost name relevance over description
+                "fields": ["name^3", "description"],  # Boost name relevance
                 "fuzziness": "AUTO"
             }
         }
@@ -48,7 +49,24 @@ async def search_products(query: str):
         results = [hit["_source"] for hit in hits]
         return {"results": results}
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Search service currently unavailable.")
+        print(f"ElasticSearch unavailable, falling back to PostgreSQL: {e}")
+        # High Availability Fallback: If ES is down, query the primary DB
+        fallback_results = db.query(models.Product).filter(
+            models.Product.name.ilike(f"%{query}%") |
+            models.Product.description.ilike(f"%{query}%")
+        ).all()
+        
+        results = [
+            {
+                "id": p.id,
+                "name": p.name,
+                "description": p.description,
+                "category": p.category,
+                "price": p.price,
+                "stock": p.stock
+            } for p in fallback_results
+        ]
+        return {"results": results}
 
 @router.get("/{product_id}", response_model=schemas.ProductResponse)
 def get_product(product_id: int, db: Session = Depends(database.get_db)):
