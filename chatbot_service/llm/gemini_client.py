@@ -21,4 +21,4 @@ def generate_response(prompt: str, context: list = None) -> str:
         return response.text
     except Exception as e:
         print(f"CRITICAL GEMINI ERROR: {str(e)}")
-        return "I am currently offline or experiencing heavy load. Please try again later."
+        return f"CRITICAL ERROR: {str(e)}"
