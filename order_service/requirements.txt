@@ -1,5 +1,4 @@
-fastapi[all]
-SQLAlchemy
-asyncpg
-aio_pika
+django
+djangorestframework
 celery
+pika
