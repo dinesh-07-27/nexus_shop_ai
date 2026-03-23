@@ -5,7 +5,7 @@ import google.generativeai as genai
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "dummy_key_for_initialization")
 genai.configure(api_key=GEMINI_API_KEY)
 
-model = genai.GenerativeModel('gemini-1.5-pro')
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 def generate_response(prompt: str, context: list = None) -> str:
     """
@@ -20,4 +20,5 @@ def generate_response(prompt: str, context: list = None) -> str:
         response = model.generate_content(full_prompt)
         return response.text
     except Exception as e:
+        print(f"CRITICAL GEMINI ERROR: {str(e)}")
         return "I am currently offline or experiencing heavy load. Please try again later."
