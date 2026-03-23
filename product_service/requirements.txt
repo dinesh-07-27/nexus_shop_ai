@@ -1,7 +1,4 @@
 fastapi[all]
-SQLAlchemy
-asyncpg
+sqlalchemy
 psycopg2-binary
-alembic
-elasticsearch
 elasticsearch[async]
