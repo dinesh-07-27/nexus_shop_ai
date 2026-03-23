@@ -1,0 +1,61 @@
+name: NexusShop AI CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Unit Tests & Coverage
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: nexus_admin
+          POSTGRES_PASSWORD: nex_password
+          POSTGRES_DB: nexus_test_db
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install Base Requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov httpx
+          
+      - name: Test User Service
+        run: |
+          cd user_service
+          pip install -r requirements.txt
+          pytest -v --cov=. test_users.py
+          
+  deploy:
+    name: Build & Deploy Microservices
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v3
+      - name: Docker Compose Build
+        run: |
+          docker-compose -f docker-compose.yml build
+      - name: Push Images to Registry & Deploy
+        run: |
+          echo "All tests passed. Deploying microservices infrastructure to Render/AWS Cloud..."
+          # Insert AWS ECS or Render CLI commands here

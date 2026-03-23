@@ -1,0 +1,8 @@
+fastapi[all]
+SQLAlchemy
+asyncpg
+psycopg2-binary
+alembic
+PyJWT
+passlib[bcrypt]
+redis

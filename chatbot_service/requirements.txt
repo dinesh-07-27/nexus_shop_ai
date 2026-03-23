@@ -1,0 +1,5 @@
+fastapi[all]
+google-generativeai
+sentence-transformers
+faiss-cpu
+numpy

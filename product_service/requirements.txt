@@ -1,0 +1,7 @@
+fastapi[all]
+SQLAlchemy
+asyncpg
+psycopg2-binary
+alembic
+elasticsearch
+elasticsearch[async]
