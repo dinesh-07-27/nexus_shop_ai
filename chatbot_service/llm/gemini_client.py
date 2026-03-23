@@ -5,7 +5,7 @@ import google.generativeai as genai
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "dummy_key_for_initialization")
 genai.configure(api_key=GEMINI_API_KEY)
 
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-2.5-flash')
 
 def generate_response(prompt: str, context: list = None) -> str:
     """
