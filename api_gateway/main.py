@@ -25,12 +25,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Target services mapping (Docker Compose DNS resolution)
+# Target services mapping (Render Full URLs)
 SERVICES = {
-    "users": "http://user_service:8000",
-    "products": "http://product_service:8000",
-    "orders": "http://order_service:8000",
-    "chatbot": "http://chatbot_service:8000"
+    "users": "https://nexus-shop-ai.onrender.com",
+    "products": "https://nexus-shop-ai-1.onrender.com",
+    "orders": "https://nexus-shop-ai-2.onrender.com",
+    "chatbot": "https://nexus-shop-ai-3.onrender.com"
 }
 
 @app.api_route("/{service_name}/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
