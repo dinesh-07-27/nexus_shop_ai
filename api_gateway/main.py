@@ -74,6 +74,20 @@ async def gateway(request: Request, service_name: str, path: str):
 
     return Response(content=response.content, status_code=response.status_code, headers=res_headers)
 
+@app.get("/")
+def read_root():
+    return {
+        "project": "NexusShop AI Backend System",
+        "architecture": "Headless Microservices + RabbitMQ Saga + Gemini Auto-Agent",
+        "message": "Welcome! Please use the direct microservice documentation links below to test POST integrations.",
+        "documentation_links": {
+            "User & Authentication Service (RBAC)": "https://nexus-shop-ai.onrender.com/docs",
+            "Product & AI Summarization Service": "https://nexus-shop-ai-1.onrender.com/docs",
+            "Chatbot & FAISS Semantic RAG Service": "https://nexus-shop-ai-3.onrender.com/docs",
+            "Order Service (Django)": "Uses Gateway /orders/"
+        }
+    }
+
 @app.get("/health")
 def gateway_health():
     return {"status": "API Gateway is active and routing correctly."}
