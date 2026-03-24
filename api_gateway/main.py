@@ -49,6 +49,7 @@ async def gateway(request: Request, service_name: str, path: str):
     # Forward headers securely (especially the Authorization Bearer Token)
     headers = dict(request.headers)
     headers.pop("host", None)
+    headers.pop("accept-encoding", None)
     
     body = await request.body()
 
