@@ -1,0 +1,148 @@
+{
+  "info": {
+    "name": "NexusShop AI - Complete E2E Flow",
+    "description": "End-to-End Testing Collection for the NexusShop AI distributed Microservices Architecture.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Register Admin User (RBAC)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"admin_demo@nexus.com\",\n    \"password\": \"supersecret\",\n    \"full_name\": \"Admin\",\n    \"is_admin\": true\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "https://nexus-shop-ai-4.onrender.com/users/users/register",
+          "protocol": "https",
+          "host": ["nexus-shop-ai-4", "onrender", "com"],
+          "path": ["users", "users", "register"]
+        }
+      }
+    },
+    {
+      "name": "2. Login \& Grab JWT Token",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "username", "value": "admin_demo@nexus.com", "type": "text" },
+            { "key": "password", "value": "supersecret", "type": "text" }
+          ]
+        },
+        "url": {
+          "raw": "https://nexus-shop-ai-4.onrender.com/users/users/login",
+          "protocol": "https",
+          "host": ["nexus-shop-ai-4", "onrender", "com"],
+          "path": ["users", "users", "login"]
+        }
+      }
+    },
+    {
+      "name": "3. Create Product (Generates Gemini FAISS Vector)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer YOUR_JWT_TOKEN_HERE" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Sony Over-Ear Noise Cancelling\",\n    \"description\": \"Perfect isolation headphones to study in absolute silence.\",\n    \"price\": 299.99,\n    \"stock\": 50,\n    \"category\": \"Audio\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "https://nexus-shop-ai-4.onrender.com/products/products/",
+          "protocol": "https",
+          "host": ["nexus-shop-ai-4", "onrender", "com"],
+          "path": ["products", "products", ""]
+        }
+      }
+    },
+    {
+      "name": "4. Semantic AI Chatbot Search (RAG)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://nexus-shop-ai-4.onrender.com/chatbot/rag/search?query=I want to study without distractions",
+          "protocol": "https",
+          "host": ["nexus-shop-ai-4", "onrender", "com"],
+          "path": ["chatbot", "rag", "search"],
+          "query": [
+            { "key": "query", "value": "I want to study without distractions" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "5. Add to Cart",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"user_id\": 1,\n    \"product_id\": 1,\n    \"quantity\": 1\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "https://nexus-shop-ai-4.onrender.com/orders/cart/add/",
+          "protocol": "https",
+          "host": ["nexus-shop-ai-4", "onrender", "com"],
+          "path": ["orders", "cart", "add", ""]
+        }
+      }
+    },
+    {
+      "name": "6. Mock Checkout (Triggers RabbitMQ Saga)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"user_id\": 1\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "https://nexus-shop-ai-4.onrender.com/orders/checkout/",
+          "protocol": "https",
+          "host": ["nexus-shop-ai-4", "onrender", "com"],
+          "path": ["orders", "checkout", ""]
+        }
+      }
+    },
+    {
+      "name": "7. Post Review (Triggers Autonomous AI Sentiment)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"user_id\": 2,\n    \"rating\": 5,\n    \"text\": \"These completely block out all the noise in my house. Best headphones ever.\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "https://nexus-shop-ai-4.onrender.com/products/products/1/reviews",
+          "protocol": "https",
+          "host": ["nexus-shop-ai-4", "onrender", "com"],
+          "path": ["products", "products", "1", "reviews"]
+        }
+      }
+    }
+  ]
+}

@@ -27,7 +27,7 @@ print("1️⃣ Registering Admin User...")
 # We use a random email so we don't get "Email already registered" on multiple runs
 rand_num = int(time.time())
 email = f"admin{rand_num}@nexus.com"
-res = send_request("POST", "/users/register", {"email": email, "password": "pass", "full_name": "Admin", "is_admin": True})
+res = send_request("POST", "/users/users/register", {"email": email, "password": "pass", "full_name": "Admin", "is_admin": True})
 print("✅ Success:", res)
 print("-" * 50)
 
@@ -35,7 +35,7 @@ print("-" * 50)
 print("2️⃣ Logging in to grab exact JWT Token...")
 # Login uses form URL encoded data
 login_data = f"username={email}&password=pass".encode('utf-8')
-req = urllib.request.Request(f"{BASE_URL}/users/login", data=login_data, method="POST")
+req = urllib.request.Request(f"{BASE_URL}/users/users/login", data=login_data, method="POST")
 with urllib.request.urlopen(req) as response:
     token_res = json.loads(response.read().decode())
 token = token_res["access_token"]
@@ -51,7 +51,7 @@ product_data = {
     "stock": 10,
     "category": "Audio"
 }
-new_prod = send_request("POST", "/products/", product_data, token)
+new_prod = send_request("POST", "/products/products/", product_data, token)
 prod_id = new_prod["id"] if new_prod else 1
 print("✅ Success:", new_prod)
 print("-" * 50)
@@ -78,7 +78,7 @@ print("-" * 50)
 
 # STEP 7: Autonomous AI Review Summarization
 print(f"7️⃣ Posting a Review to trigger Autonomous AI Sentiment summarizer on Product #{prod_id}...")
-res = send_request("POST", f"/products/{prod_id}/reviews", {
+res = send_request("POST", f"/products/products/{prod_id}/reviews", {
     "user_id": 2, 
     "rating": 5, 
     "text": "These earbuds completely lock out the noise. Worth every penny."
@@ -88,7 +88,7 @@ print("⏳ Waiting 6 seconds for Gemini 2.5 Flash to automatically summarize the
 time.sleep(6)
 
 print("8️⃣ Fetching the final Product to see the AI's generated summary attached!")
-final_prod = send_request("GET", f"/products/{prod_id}")
+final_prod = send_request("GET", f"/products/products/{prod_id}")
 print("✅ Final Product Data from Database:")
 print(json.dumps(final_prod, indent=2))
 
