@@ -6,7 +6,7 @@ from elasticsearch import AsyncElasticsearch
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://nexus_admin:nex_password@localhost:5432/nexus_db")
 ES_URL = os.getenv("ELASTICSEARCH_URL", "http://localhost:9200")
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL, pool_size=1, max_overflow=1, pool_recycle=300)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
