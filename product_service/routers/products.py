@@ -91,3 +91,55 @@ def get_product(product_id: int, db: Session = Depends(database.get_db)):
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     return product
+
+from fastapi import BackgroundTasks
+import google.generativeai as genai
+import os
+
+genai.configure(api_key=os.getenv("GEMINI_API_KEY", "dummy"))
+genai_model = genai.GenerativeModel('gemini-2.5-flash')
+
+def summarize_reviews(product_id: int):
+    # Runs autonomously in the background via FastAPI's BackgroundTasks
+    db = database.SessionLocal()
+    try:
+        product = db.query(models.Product).filter(models.Product.id == product_id).first()
+        if not product: return
+        reviews = db.query(models.Review).filter(models.Review.product_id == product_id).all()
+        if not reviews: return
+        
+        review_texts = [f"Rating: {r.rating}/5 - {r.text}" for r in reviews]
+        prompt = f"Analyze the following product reviews for '{product.name}' and write a single, short sentence summarizing the overall customer sentiment:\n\n" + "\n".join(review_texts)
+        
+        response = genai_model.generate_content(prompt)
+        product.ai_summary = response.text.strip()
+        db.commit()
+    except Exception as e:
+        print(f"AI Review Summarization failed: {e}")
+    finally:
+        db.close()
+
+@router.post("/{product_id}/reviews", response_model=schemas.ReviewResponse)
+def add_review(
+    product_id: int, 
+    review: schemas.ReviewCreate, 
+    background_tasks: BackgroundTasks, 
+    db: Session = Depends(database.get_db)
+):
+    product = db.query(models.Product).filter(models.Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+        
+    new_review = models.Review(**review.dict(), product_id=product_id)
+    db.add(new_review)
+    db.commit()
+    db.refresh(new_review)
+    
+    # Trigger Autonomous AI Sentiment Extraction
+    background_tasks.add_task(summarize_reviews, product_id)
+    
+    return new_review
+
+@router.get("/{product_id}/reviews")
+def get_reviews(product_id: int, db: Session = Depends(database.get_db)):
+    return db.query(models.Review).filter(models.Review.product_id == product_id).all()
