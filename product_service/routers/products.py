@@ -32,6 +32,19 @@ async def create_product(
         # Depending on saga/rollback logic, we might queue a retry here.
         print(f"Failed to index to ES: {e}")
 
+    # 3. Async Index in FAISS (Chatbot RAG) for Semantic Search
+    try:
+        import httpx
+        async with httpx.AsyncClient() as client:
+            rag_payload = {
+                "product_id": db_product.id,
+                "text": f"{db_product.name} - {db_product.description}. Category: {db_product.category}"
+            }
+            # Fire and forget
+            await client.post("https://nexus-shop-ai-3.onrender.com/rag/products", json=rag_payload, timeout=2.0)
+    except Exception as e:
+        print(f"Failed to update Semantic Search vector: {e}")
+
     return db_product
 
 @router.get("/search")

@@ -22,3 +22,16 @@ def generate_response(prompt: str, context: list = None) -> str:
     except Exception as e:
         print(f"CRITICAL GEMINI ERROR: {str(e)}")
         return f"CRITICAL ERROR: {str(e)}"
+
+def get_embedding(text: str) -> list[float]:
+    """Generates a 768-dimensional embedding vector for the text."""
+    try:
+        result = genai.embed_content(
+            model="models/text-embedding-004",
+            content=text,
+            task_type="retrieval_document",
+        )
+        return result['embedding']
+    except Exception as e:
+        print(f"Failed to generate embedding: {e}")
+        return [0.0] * 768

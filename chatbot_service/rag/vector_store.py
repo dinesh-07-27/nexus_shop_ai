@@ -2,14 +2,14 @@ import faiss
 import numpy as np
 
 class FAISSStore:
-    def __init__(self, dimension=384):
+    def __init__(self, dimension=768):
         self.dimension = dimension
         self.index = faiss.IndexFlatL2(dimension)
-        self.documents = []  # Persistent DB mapping id -> text should be used in production
+        self.documents = []  # List of dicts, e.g. {"product_id": 1, "text": "..."}
 
-    def add_document(self, embedding: np.ndarray, text: str):
+    def add_document(self, embedding: np.ndarray, meta_data: dict):
         self.index.add(np.array([embedding]).astype('float32'))
-        self.documents.append(text)
+        self.documents.append(meta_data)
 
     def search(self, query_embedding: np.ndarray, top_k=3):
         if self.index.ntotal == 0:
