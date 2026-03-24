@@ -2,3 +2,4 @@ fastapi[all]
 sqlalchemy
 psycopg2-binary
 elasticsearch[async]
+python-jose[cryptography]

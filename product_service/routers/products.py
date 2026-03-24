@@ -1,11 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-import models, schemas, database
+import models, schemas, database, auth
 
 router = APIRouter(prefix="/products", tags=["Products"])
 
 @router.post("/", response_model=schemas.ProductResponse)
-async def create_product(product: schemas.ProductCreate, db: Session = Depends(database.get_db)):
+async def create_product(
+    product: schemas.ProductCreate,
+    db: Session = Depends(database.get_db),
+    admin_user: dict = Depends(auth.get_current_admin_user)
+):
     # 1. Save to PostgreSQL for strict ACID compliance
     db_product = models.Product(**product.dict())
     db.add(db_product)
