@@ -26,7 +26,7 @@
       }
     },
     {
-      "name": "2. Login \& Grab JWT Token",
+      "name": "2. Login and Grab JWT Token",
       "request": {
         "method": "POST",
         "header": [
