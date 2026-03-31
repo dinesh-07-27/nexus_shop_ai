@@ -1,7 +1,7 @@
 import httpx
 import numpy as np
 from app.schemas.chat import ChatRequest, ChatResponse
-from app.llm.gemini_client import generate_response
+from app.llm.gemini_client import generate_response, get_embedding
 from app.rag.vector_store import store
 
 async def process_chat(request: ChatRequest) -> ChatResponse:
@@ -39,13 +39,20 @@ async def process_chat(request: ChatRequest) -> ChatResponse:
                     pass
 
     # Default RAG FAQ Flow
-    # 1. Generate query embedding
-    query_emb = np.random.rand(384).astype('float32')
-    
-    # 2. Search FAISS for related internal rules/policies
-    context_docs = store.search(query_emb)
+    context_docs = []
+    try:
+        # 1. Generate query embedding (Real 768-dim from Gemini)
+        embedding_data = get_embedding(user_message)
+        query_emb = np.array(embedding_data).astype('float32')
+        
+        # 2. Search FAISS for related internal rules/policies
+        context_data = store.search(query_emb)
+        context_docs = [doc.get("text", "") for doc in context_data if "text" in doc]
+    except Exception as e:
+        print(f"RAG search failed: {e}")
 
     # 3. Call Gemini LLM with augmented context
     reply = generate_response(user_message, context_docs)
 
     return ChatResponse(reply=reply, intent="faq_or_general")
+
