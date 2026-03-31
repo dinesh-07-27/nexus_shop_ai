@@ -8,7 +8,8 @@ SECRET_KEY = os.getenv("JWT_SECRET_KEY", "NEXUS_SUPER_SECRET_KEY")
 ALGORITHM = "HS256"
 
 # This expects the frontend/Postman to send the standard Bearer token
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/users/login")
+# Swagger UI will now correctly point to the Auth service for login
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="https://nexus-shop-ai.onrender.com/api/v1/users/login")
 
 def get_current_user_payload(token: str = Depends(oauth2_scheme)) -> dict:
     """Extracts and cryptographically verifies the JWT across microservice boundaries."""
