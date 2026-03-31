@@ -41,10 +41,11 @@ jobs:
       - name: Test User Service
         env:
           DATABASE_URL: "postgresql://nexus_admin:nex_password@localhost:5432/nexus_test_db"
+          JWT_SECRET_KEY: "NEXUS_SUPER_SECRET_KEY"
         run: |
           cd user_service
           pip install -r requirements.txt
-          pytest -v --cov=. test_users.py
+          PYTHONPATH=. pytest -v --cov=app test_users.py
           
   deploy:
     name: Build & Deploy Microservices

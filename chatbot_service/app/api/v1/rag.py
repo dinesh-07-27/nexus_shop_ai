@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from rag.vector_store import store
-from llm.gemini_client import get_embedding
+from app.rag.vector_store import store
+from app.llm.gemini_client import get_embedding
 
-router = APIRouter(prefix="/rag", tags=["RAG"])
+router = APIRouter(prefix="/api/v1/chatbot/rag", tags=["RAG Document Embeddings (v1)"])
 
 class ProductDoc(BaseModel):
     product_id: int
@@ -11,6 +11,7 @@ class ProductDoc(BaseModel):
 
 @router.post("/products")
 def index_product(doc: ProductDoc):
+    """Internal Webhook: Used by Product Service to asynchronously index items into FAISS."""
     emb = get_embedding(doc.text)
     store.add_document(emb, {"product_id": doc.product_id, "text": doc.text})
     return {"status": "indexed", "dimension": len(emb)}

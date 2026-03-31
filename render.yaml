@@ -1,0 +1,68 @@
+services:
+  # ── API Gateway (Nginx Docker) ──────────────────────────────────────────────
+  - type: web
+    name: nexus-api-gateway
+    env: docker
+    dockerfilePath: ./api_gateway/Dockerfile
+    dockerContext: ./api_gateway
+    plan: free
+
+  # ── Auth & User Service (FastAPI) ───────────────────────────────────────────
+  - type: web
+    name: nexus-shop-ai
+    env: python
+    buildCommand: pip install -r user_service/requirements.txt
+    startCommand: cd user_service && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false
+
+  # ── Product Catalog Service (FastAPI + Elasticsearch) ──────────────────────
+  - type: web
+    name: nexus-shop-ai-1
+    env: python
+    buildCommand: pip install -r product_service/requirements.txt
+    startCommand: cd product_service && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: ELASTIC_URL
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+
+  # ── Order Saga Service (Django + RabbitMQ) ─────────────────────────────────
+  - type: web
+    name: nexus-shop-ai-2
+    env: python
+    buildCommand: pip install -r order_service/requirements.txt
+    startCommand: cd order_service && python manage.py migrate --noinput && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: RABBITMQ_URL
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false
+
+  # ── Chatbot RAG Service (FastAPI + Gemini FAISS) ───────────────────────────
+  - type: web
+    name: nexus-shop-ai-3
+    env: python
+    buildCommand: pip install -r chatbot_service/requirements.txt
+    startCommand: cd chatbot_service && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false

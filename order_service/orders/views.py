@@ -1,10 +1,15 @@
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+import logging
 from .models import Order
 from .tasks import publish_order_event
+from .auth import require_jwt
+
+logger = logging.getLogger(__name__)
 
 @csrf_exempt
+@require_jwt
 def create_order(request):
     if request.method == 'POST':
         try:
@@ -35,6 +40,7 @@ def create_order(request):
     
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
+@require_jwt
 def get_order(request, order_id):
     if request.method == 'GET':
         try:
@@ -51,6 +57,7 @@ def get_order(request, order_id):
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 @csrf_exempt
+@require_jwt
 def add_to_cart(request):
     if request.method == 'POST':
         try:
@@ -76,6 +83,7 @@ def add_to_cart(request):
             return JsonResponse({'error': str(e)}, status=500)
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
+@require_jwt
 def get_cart(request, user_id):
     if request.method == 'GET':
         from .models import Cart
@@ -92,6 +100,7 @@ def get_cart(request, user_id):
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 @csrf_exempt
+@require_jwt
 def checkout(request):
     if request.method == 'POST':
         try:
@@ -136,3 +145,6 @@ def checkout(request):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
     return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+def health_check(request):
+    return JsonResponse({"status": "Order Saga Service API v1 is fully healthy"}, status=200)
