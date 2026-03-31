@@ -10,10 +10,13 @@ def publish_order_event(order_id):
     Other services (like Inventory) listen to this queue to adjust stock.
     """
     try:
+        import os
         order = Order.objects.get(id=order_id)
         
-        # Connect to RabbitMQ (host is 'rabbitmq' in docker-compose, 'localhost' otherwise)
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+        # Connect to Production RabbitMQ using URL from environment
+        url = os.environ.get('RABBITMQ_URL', 'amqp://guest:guest@localhost//')
+        params = pika.URLParameters(url)
+        connection = pika.BlockingConnection(params)
         channel = connection.channel()
 
         channel.queue_declare(queue='order_events', durable=True)
