@@ -1,8 +1,8 @@
 import httpx
 import numpy as np
-from schemas.chat import ChatRequest, ChatResponse
-from llm.gemini_client import generate_response
-from rag.vector_store import store
+from app.schemas.chat import ChatRequest, ChatResponse
+from app.llm.gemini_client import generate_response
+from app.rag.vector_store import store
 
 async def process_chat(request: ChatRequest) -> ChatResponse:
     user_message = request.message.lower()
@@ -12,7 +12,7 @@ async def process_chat(request: ChatRequest) -> ChatResponse:
         async with httpx.AsyncClient() as client:
             try:
                 # Querying the internal product service directly (live URL)
-                prod_res = await client.get(f"https://nexus-shop-ai-1.onrender.com/products/search?query={request.message}", timeout=5.0)
+                prod_res = await client.get(f"https://nexus-shop-ai-1.onrender.com/api/v1/products/search?query={request.message}", timeout=5.0)
                 if prod_res.status_code == 200:
                     products = prod_res.json().get('results', [])
                     if products:
@@ -29,7 +29,7 @@ async def process_chat(request: ChatRequest) -> ChatResponse:
         if order_id:
             async with httpx.AsyncClient() as client:
                 try:
-                    order_res = await client.get(f"https://nexus-shop-ai-2.onrender.com/orders/{order_id}", timeout=5.0)
+                    order_res = await client.get(f"https://nexus-shop-ai-2.onrender.com/api/v1/orders/{order_id}/", timeout=5.0)
                     if order_res.status_code == 200:
                         order_data = order_res.json()
                         context = [f"Order ID {order_id} is currently {order_data['status']}"]
