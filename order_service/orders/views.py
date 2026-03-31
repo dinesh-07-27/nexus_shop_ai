@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 def create_order(request):
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)
+            data = json.loads(request.body) if request.body else {}
             user_id = request.user_id or data.get('user_id')
             product_id = data.get('product_id')
             quantity = data.get('quantity', 1)
@@ -61,7 +61,7 @@ def get_order(request, order_id):
 def add_to_cart(request):
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)
+            data = json.loads(request.body) if request.body else {}
             user_id = request.user_id or data.get('user_id')
             product_id = data.get('product_id')
             quantity = data.get('quantity', 1)
@@ -104,7 +104,7 @@ def get_cart(request, user_id):
 def checkout(request):
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)
+            data = json.loads(request.body) if request.body else {}
             user_id = request.user_id or data.get('user_id')
             
             if not user_id:
