@@ -4,3 +4,5 @@ celery
 pika
 gunicorn
 python-jose
+dj-database-url
+psycopg2-binary

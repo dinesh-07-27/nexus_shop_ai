@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 
 # 2. Database Bootstrap
 models.Base.metadata.create_all(bind=database.engine)
-logger.info("Checked Postgres/SQLite Database schema sync.")
+database.run_migrations()  # Safely add new columns to existing tables
+logger.info("Database schema check and migrations complete.")
 
 # 3. Application Orchestration
 app = FastAPI(

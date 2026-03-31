@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
 class ProductBase(BaseModel):
@@ -15,8 +15,7 @@ class ProductResponse(ProductBase):
     id: int
     ai_summary: Optional[str] = None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class ReviewCreate(BaseModel):
     user_id: int
@@ -27,5 +26,4 @@ class ReviewResponse(ReviewCreate):
     id: int
     product_id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
