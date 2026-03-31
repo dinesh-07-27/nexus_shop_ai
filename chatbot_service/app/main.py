@@ -1,6 +1,7 @@
 import logging
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1 import chat, rag
 
@@ -16,6 +17,15 @@ app = FastAPI(
     title="NexusShop AI - Chatbot & RAG Recommendation Service",
     description="Semantic FAISS Vector Search with Gemini LLM inference. Secured by cross-service JWT.",
     version="1.1.0"
+)
+
+# Enable CORS for cross-service Swagger authorization
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # 3. Standard Error Interceptors (Resilience)

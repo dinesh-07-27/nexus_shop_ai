@@ -1,6 +1,7 @@
 import logging
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.db import models, database
 from app.api.v1 import users
@@ -22,6 +23,15 @@ app = FastAPI(
     title="NexusShop AI - Auth & User Service",
     description="Amazon-grade Authentication provider with Strict RBAC (Role Based Access Control) Enforcements.",
     version="1.1.0"
+)
+
+# Enable CORS for cross-service Swagger authorization
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # 4. Standard Error Interceptors (Resilience)

@@ -1,6 +1,7 @@
 import logging
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.db import models, database
 from app.api.v1 import products
@@ -22,6 +23,15 @@ app = FastAPI(
     title="NexusShop AI - Product Service",
     description="Scalable Catalog Management, Elasticsearch Sync, and Role-Based Administration.",
     version="1.1.0"
+)
+
+# Enable CORS for cross-service Swagger authorization
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # 4. Standard Error Interceptors (Resilience)
