@@ -56,7 +56,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Docker Compose Build
         run: |
-          docker-compose -f docker-compose.yml build
+          docker compose -f docker-compose.yml build
       - name: Push Images to Registry & Deploy
         run: |
           echo "All tests passed. Deploying microservices infrastructure to Render/AWS Cloud..."
