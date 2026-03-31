@@ -1,6 +1,16 @@
 version: '3.8'
 
 services:
+  api-gateway:
+    build:
+      context: ./api_gateway
+    ports:
+      - "80:80"
+    depends_on:
+      # These refer to the user's requested hostnames
+      - postgres
+      - redis
+
   postgres:
     image: postgres:15-alpine
     environment:
