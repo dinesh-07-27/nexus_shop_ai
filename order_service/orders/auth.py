@@ -29,6 +29,7 @@ def require_jwt(view_func):
 
         # Attach custom payload info to request for the view to use
         request.jwt_email = email
+        request.user_id = payload.get("user_id")
         request.is_admin = payload.get("is_admin", False)
         
         return view_func(request, *args, **kwargs)

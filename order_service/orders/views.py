@@ -14,7 +14,7 @@ def create_order(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            user_id = data.get('user_id')
+            user_id = request.user_id or data.get('user_id')
             product_id = data.get('product_id')
             quantity = data.get('quantity', 1)
             total_price = data.get('total_price')
@@ -62,7 +62,7 @@ def add_to_cart(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            user_id = data.get('user_id')
+            user_id = request.user_id or data.get('user_id')
             product_id = data.get('product_id')
             quantity = data.get('quantity', 1)
 
@@ -105,7 +105,7 @@ def checkout(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            user_id = data.get('user_id')
+            user_id = request.user_id or data.get('user_id')
             
             if not user_id:
                 return JsonResponse({'error': 'Missing user_id'}, status=400)

@@ -33,9 +33,10 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     if not user or not security.verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     
-    # Store sub (email) and explicitly encode RBAC role in JWT
+    # Store sub (email), id, and RBAC role in JWT
     access_token = security.create_access_token(data={
         "sub": user.email, 
+        "user_id": user.id,
         "is_admin": user.is_admin
     })
     return {"access_token": access_token, "token_type": "bearer"}
