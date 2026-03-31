@@ -13,6 +13,12 @@ router = APIRouter(prefix="/api/v1/products", tags=["Products (v1)"])
 genai.configure(api_key=os.getenv("GEMINI_API_KEY", "dummy"))
 genai_model = genai.GenerativeModel('gemini-2.5-flash')
 
+@router.get("/", response_model=list[schemas.ProductResponse])
+def list_products(db: Session = Depends(database.get_db)):
+    """Publicly accessible: List all products in the catalog."""
+    return db.query(models.Product).all()
+
+
 @router.post("/", response_model=schemas.ProductResponse)
 async def create_product(
     product: schemas.ProductCreate,
